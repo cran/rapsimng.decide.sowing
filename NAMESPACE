@@ -2,4 +2,6 @@
 
 export(document)
 export(evaluate)
+importFrom(forcats,fct_reorder)
+importFrom(ggplot2,ggplot)
 importFrom(rlang,.data)

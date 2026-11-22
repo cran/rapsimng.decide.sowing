@@ -1,12 +1,12 @@
 test_that("document builds and renders from example APSIM output", {
     testthat::skip_if_not_installed("here")
     testthat::skip_if_not_installed("quarto")
-    testthat::skip_if_not_installed("rapsimng.decide")
 
-    quarto_bin <- tryCatch(quarto::quarto_path(), error = function(...) "")
-    testthat::skip_if(!nzchar(quarto_bin), "Quarto CLI is not available")
+    
+    quarto_bin <- quarto::quarto_path()
+    testthat::skip_if(is.null(quarto_bin) || !nzchar(quarto_bin), "Quarto CLI is not available")
 
-    data <- rapsimng.decide::read_output(
+    data <- rapsimng.decide.core::read_output(
         system.file("example/sowing.apsimx", package = "rapsimng.decide.sowing"),
         "HarvestReport"
     ) |>
@@ -40,8 +40,8 @@ test_that("document builds and renders from example APSIM output", {
     lines <- rapsimng.decide.sowing:::.document_lines(doc)
 
     testthat::expect_true(any(grepl('title: "Sowing Window Suitability Report"', lines, fixed = TRUE)))
-    testthat::expect_false(any(grepl('rapsimng.decide::read_output(source$file, source$report)', lines, fixed = TRUE)))
-    testthat::expect_true(any(grepl('rapsimng.decide::evaluate,', lines, fixed = TRUE)))
+    testthat::expect_false(any(grepl('rapsimng.decide.core::read_output(source$file, source$report)', lines, fixed = TRUE)))
+    testthat::expect_true(any(grepl('rapsimng.decide.sowing::evaluate,', lines, fixed = TRUE)))
     testthat::expect_true(any(
         grepl('Sowing Window', lines, fixed = TRUE) &
             grepl('Average Yield', lines, fixed = TRUE)
@@ -60,7 +60,7 @@ test_that("document builds and renders from example APSIM output", {
     quarto::quarto_render(
         input = qmd_path,
         output_file = basename(html_path),
-        quiet = TRUE
+        quiet = FALSE
     )
 
     testthat::expect_true(file.exists(qmd_path))
